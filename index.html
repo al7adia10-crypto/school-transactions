@@ -1,944 +1,334 @@
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
-
 <head>
-
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>الصادر والوارد - الابتدائية الحادية عشر</title>
-
+  <title>نظام الصادر والوارد - الابتدائية الحادية عشر</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
-
     *{box-sizing:border-box}
-
-    body{
-
-      margin:0;
-
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;
-
-      background:#f5f7f8;
-
-      color:#1e293b;
-
-    }
-
-    .header{
-
-      background:linear-gradient(135deg,#075985,#0f766e);
-
-      color:white;
-
-      padding:28px 18px;
-
-      text-align:center;
-
-      border-radius:0 0 28px 28px;
-
-    }
-
-    .header h1{margin:0;font-size:24px}
-
-    .header p{margin:8px 0 0;opacity:.9}
-
-    .container{
-
-      max-width:700px;
-
-      margin:auto;
-
-      padding:18px;
-
-    }
-
-    .card{
-
-      background:white;
-
-      padding:18px;
-
-      margin-bottom:15px;
-
-      border-radius:18px;
-
-      box-shadow:0 4px 18px rgba(0,0,0,.06);
-
-    }
-
-    input,select,textarea{
-
-      width:100%;
-
-      padding:13px;
-
-      margin:7px 0;
-
-      border:1px solid #d7dde3;
-
-      border-radius:12px;
-
-      font-size:16px;
-
-      background:white;
-
-    }
-
-    textarea{min-height:85px}
-
-    button{
-
-      border:0;
-
-      border-radius:12px;
-
-      padding:13px 18px;
-
-      font-size:16px;
-
-      cursor:pointer;
-
-    }
-
-    .primary{
-
-      width:100%;
-
-      background:#0f766e;
-
-      color:white;
-
-      font-weight:700;
-
-    }
-
-    .danger{
-
-      background:#ef4444;
-
-      color:white;
-
-    }
-
-    .stats{
-
-      display:grid;
-
-      grid-template-columns:1fr 1fr;
-
-      gap:10px;
-
-      margin-bottom:15px;
-
-    }
-
-    .stat{
-
-      background:white;
-
-      border-radius:16px;
-
-      padding:16px;
-
-      text-align:center;
-
-      box-shadow:0 3px 12px rgba(0,0,0,.05);
-
-    }
-
-    .stat strong{
-
-      display:block;
-
-      font-size:26px;
-
-      color:#0f766e;
-
-      margin-top:5px;
-
-    }
-
-    .transaction{
-
-      border-right:5px solid #0f766e;
-
-    }
-
-    .transaction h3{
-
-      margin:0 0 8px;
-
-    }
-
-    .badge{
-
-      display:inline-block;
-
-      padding:5px 10px;
-
-      border-radius:20px;
-
-      background:#e6fffa;
-
-      color:#0f766e;
-
-      font-size:13px;
-
-    }
-
-    .row{
-
-      display:flex;
-
-      justify-content:space-between;
-
-      gap:10px;
-
-      align-items:center;
-
-    }
-
-    .hidden{display:none}
-
-    #message{
-
-      margin:10px 0;
-
-      text-align:center;
-
-      font-weight:600;
-
-    }
-
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;background:#f4f7f8;color:#1e293b}
+    .header{background:linear-gradient(135deg,#075985,#0f766e);color:#fff;padding:24px 18px;text-align:center;border-radius:0 0 28px 28px}
+    .header h1{margin:0;font-size:24px}.header p{margin:7px 0 0;opacity:.9}
+    .container{max-width:920px;margin:auto;padding:16px}
+    .card{background:#fff;padding:16px;margin-bottom:14px;border-radius:18px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+    input,select,textarea{width:100%;padding:12px;margin:6px 0;border:1px solid #d7dde3;border-radius:12px;font-size:16px;background:#fff}
+    textarea{min-height:82px;resize:vertical}
+    button{border:0;border-radius:12px;padding:12px 16px;font-size:15px;cursor:pointer}
+    .primary{background:#0f766e;color:#fff;font-weight:700}.secondary{background:#e2e8f0;color:#0f172a}.danger{background:#ef4444;color:#fff}.small{padding:9px 12px;font-size:14px}
+    .hidden{display:none!important}.row{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+    .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+    .tab{background:#fff;color:#334155;border:1px solid #dbe3e8}.tab.active{background:#0f766e;color:#fff;border-color:#0f766e}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.stat{background:#fff;border-radius:16px;padding:14px;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,.05)}.stat strong{display:block;font-size:24px;color:#0f766e;margin-top:5px}
+    .section-title{margin:6px 0 12px}.item{border-right:5px solid #0f766e}.item h3{margin:0 0 8px}.meta{color:#64748b;font-size:14px;line-height:1.8}.badge{display:inline-block;padding:5px 10px;border-radius:20px;background:#e6fffa;color:#0f766e;font-size:13px;margin:3px 0}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .message{margin:10px 0;text-align:center;font-weight:600}.empty{color:#64748b;text-align:center}.file-note{font-size:13px;color:#64748b;margin-top:4px}
+    .dashboard-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.dash-card{background:#fff;padding:18px;border-radius:18px;box-shadow:0 3px 12px rgba(0,0,0,.05)}.dash-card strong{font-size:28px;color:#0f766e;display:block;margin-top:7px}
+    @media(max-width:700px){.stats{grid-template-columns:1fr 1fr}.tabs{grid-template-columns:1fr 1fr}.dashboard-grid{grid-template-columns:1fr}.row>*{max-width:100%}}
   </style>
-
 </head>
-
 <body>
-
 <div class="header">
-
   <h1>نظام الصادر والوارد</h1>
-
   <p>الابتدائية الحادية عشر</p>
-
 </div>
 
 <div class="container">
-
-  <!-- تسجيل الدخول -->
-
   <div id="loginPage" class="card">
-
     <h2>تسجيل الدخول</h2>
-
-    <input id="email" type="email" placeholder="البريد الإلكتروني">
-
-    <input id="password" type="password" placeholder="كلمة المرور">
-
-    <button class="primary" onclick="login()">
-
-      دخول
-
-    </button>
-
-    <div id="loginMessage"></div>
-
+    <input id="email" type="email" placeholder="البريد الإلكتروني" autocomplete="username">
+    <input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+    <button class="primary" style="width:100%" onclick="login()">دخول</button>
+    <div id="loginMessage" class="message"></div>
   </div>
-
-  <!-- التطبيق -->
 
   <div id="app" class="hidden">
-
     <div class="card">
-
       <div class="row">
-
-        <div>
-
-          <strong id="userName">فاطمة الشمري</strong>
-
-          <div id="userRole"></div>
-
-        </div>
-
-        <button class="danger" onclick="logout()">
-
-          خروج
-
-        </button>
-
+        <div><strong id="userName">المستخدم</strong><div id="userRole" class="meta"></div></div>
+        <button class="danger small" onclick="logout()">خروج</button>
       </div>
-
     </div>
 
-    <div class="stats">
-
-      <div class="stat">
-
-        الوارد
-
-        <strong id="importCount">0</strong>
-
-      </div>
-
-      <div class="stat">
-
-        الصادر
-
-        <strong id="exportCount">0</strong>
-
-      </div>
-
-      <div class="stat">
-
-        المكتملة
-
-        <strong id="completedCount">0</strong>
-
-      </div>
-
-      <div class="stat">
-
-        إجمالي المعاملات
-
-        <strong id="totalCount">0</strong>
-
-      </div>
-
+    <div class="tabs">
+      <button class="tab active" data-page="dashboard" onclick="showPage('dashboard',this)">الداش بورد</button>
+      <button class="tab" data-page="transactionsPage" onclick="showPage('transactionsPage',this)">الصادر والوارد</button>
+      <button class="tab" data-page="committeesPage" onclick="openDocsPage('committee','committeesPage',this)">اللجان</button>
+      <button class="tab" data-page="assignmentsPage" onclick="openDocsPage('assignment','assignmentsPage',this)">التكليفات</button>
+      <button class="tab" data-page="circularsPage" onclick="openDocsPage('circular','circularsPage',this)">النشرات</button>
+      <button class="tab" data-page="attachmentsPage" onclick="openDocsPage('attachment','attachmentsPage',this)">المرفقات</button>
     </div>
 
-    <div class="card">
+    <section id="dashboard" class="page">
+      <div class="stats">
+        <div class="stat">الوارد<strong id="importCount">0</strong></div>
+        <div class="stat">الصادر<strong id="exportCount">0</strong></div>
+        <div class="stat">المكتملة<strong id="completedCount">0</strong></div>
+        <div class="stat">إجمالي المعاملات<strong id="totalCount">0</strong></div>
+      </div>
+      <div class="dashboard-grid">
+        <div class="dash-card">اللجان<strong id="committeeCount">0</strong></div>
+        <div class="dash-card">التكليفات<strong id="assignmentCount">0</strong></div>
+        <div class="dash-card">النشرات<strong id="circularCount">0</strong></div>
+        <div class="dash-card">المرفقات<strong id="attachmentCount">0</strong></div>
+      </div>
+    </section>
 
-      <h2>إضافة معاملة</h2>
+    <section id="transactionsPage" class="page hidden">
+      <div class="card">
+        <h2 class="section-title">إضافة معاملة</h2>
+        <input id="transactionNumber" placeholder="رقم المعاملة">
+        <select id="transactionType"><option value="Import">وارد</option><option value="Export">صادر</option></select>
+        <input id="transactionDate" type="date">
+        <input id="origin" placeholder="الجهة / المصدر">
+        <input id="destination" placeholder="الجهة المرسل إليها">
+        <input id="subject" placeholder="موضوع المعاملة">
+        <select id="status">
+          <option value="Draft">مسودة</option><option value="UnderReview">قيد المراجعة</option><option value="Approved">معتمدة</option><option value="Completed">مكتملة</option><option value="Suspended">معلقة</option>
+        </select>
+        <textarea id="notes" placeholder="ملاحظات"></textarea>
+        <input id="attachmentFile" type="file" accept="application/pdf,.pdf">
+        <div class="file-note">يمكن إرفاق ملف PDF مع المعاملة.</div>
+        <button class="primary" style="width:100%;margin-top:8px" onclick="addTransaction()">حفظ المعاملة</button>
+        <div id="message" class="message"></div>
+      </div>
+      <div class="card"><h2 class="section-title">البحث</h2><input id="search" placeholder="ابحثي برقم المعاملة أو الموضوع أو الجهة" oninput="renderTransactions()"></div>
+      <h2>المعاملات</h2><div id="transactions"></div>
+    </section>
 
-      <input id="transactionNumber" placeholder="رقم المعاملة">
-
-      <select id="transactionType">
-
-        <option value="Import">وارد</option>
-
-        <option value="Export">صادر</option>
-
-      </select>
-
-      <input id="transactionDate" type="date">
-
-      <input id="origin" placeholder="الجهة / المصدر">
-
-      <input id="destination" placeholder="الجهة المرسل إليها">
-
-      <input id="subject" placeholder="موضوع المعاملة">
-
-      <select id="status">
-
-        <option value="Draft">مسودة</option>
-
-        <option value="UnderReview">قيد المراجعة</option>
-
-        <option value="Approved">معتمدة</option>
-
-        <option value="Completed">مكتملة</option>
-
-        <option value="Suspended">معلقة</option>
-
-      </select>
-
-      <textarea id="notes" placeholder="ملاحظات"></textarea>
-<input id="attachmentFile" type="file" accept="application/pdf">
-      <button class="primary" onclick="addTransaction()">
-
-        حفظ المعاملة
-
-      </button>
-
-      <div id="message"></div>
-
-    </div>
-
-    <div class="card">
-
-      <h2>البحث</h2>
-
-      <input
-
-        id="search"
-
-        placeholder="ابحثي برقم المعاملة أو الموضوع أو الجهة"
-
-        oninput="renderTransactions()"
-
-      >
-
-    </div>
-
-    <h2>المعاملات</h2>
-
-    <div id="transactions"></div>
-
+    <section id="committeesPage" class="page hidden"></section>
+    <section id="assignmentsPage" class="page hidden"></section>
+    <section id="circularsPage" class="page hidden"></section>
+    <section id="attachmentsPage" class="page hidden"></section>
   </div>
-
 </div>
 
 <script>
+const SUPABASE_URL='https://alqhjzfvjgyhlitwdzxl.supabase.co';
+const SUPABASE_KEY='sb_publishable_Dtv-dGYzmK9I2ppxuqH4dQ_qgFDZtcA';
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const TRANSACTION_BUCKET='transaction-documents';
+const DOC_BUCKET='school-documents';
 
-const SUPABASE_URL =
+let allTransactions=[];
+let allDocuments=[];
+let currentDocCategory='committee';
+const docLabels={committee:'اللجان',assignment:'التكليفات',circular:'النشرات',attachment:'المرفقات'};
 
-'https://alqhjzfvjgyhlitwdzxl.supabase.co';
-
-const SUPABASE_KEY =
-
-'sb_publishable_Dtv-dGYzmK9I2ppxuqH4dQ_qgFDZtcA';
-
-const db = supabase.createClient(
-
-  SUPABASE_URL,
-
-  SUPABASE_KEY
-
-);
-
-let allTransactions = [];
-
-/* تسجيل الدخول */
+function escapeHtml(value){
+  return String(value ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]));
+}
+function safeId(value){return String(value).replace(/[^a-zA-Z0-9_-]/g,'');}
+function makeFileName(){return `${Date.now()}_${crypto.randomUUID().replaceAll('-','')}.pdf`;}
 
 async function login(){
-
-  const email =
-
-    document.getElementById('email').value.trim();
-
-  const password =
-
-    document.getElementById('password').value;
-
-  const message =
-
-    document.getElementById('loginMessage');
-
-  message.textContent = 'جاري تسجيل الدخول...';
-
-  const {data,error} =
-
-    await db.auth.signInWithPassword({
-
-      email,
-
-      password
-
-    });
-
-  if(error){
-
-    message.textContent =
-
-      'تعذر تسجيل الدخول: ' + error.message;
-
-    return;
-
-  }
-
-  message.textContent = '';
-
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value;
+  const message=document.getElementById('loginMessage');
+  message.textContent='جاري تسجيل الدخول...';
+  const {data,error}=await db.auth.signInWithPassword({email,password});
+  if(error){message.textContent='تعذر تسجيل الدخول: '+error.message;return;}
+  message.textContent='';
   await openApp(data.user);
-
 }
-
-/* فتح التطبيق */
 
 async function openApp(user){
-
-  document.getElementById('loginPage')
-
-    .classList.add('hidden');
-
-  document.getElementById('app')
-
-    .classList.remove('hidden');
-
-  const {data:profile} =
-
-    await db
-
-      .from('profiles')
-
-      .select('full_name,role,is_active')
-
-      .eq('id',user.id)
-
-      .single();
-
-  if(profile){
-
-    document.getElementById('userName')
-
-      .textContent =
-
-      profile.full_name || user.email;
-
-    document.getElementById('userRole')
-
-      .textContent =
-
-      profile.role || '';
-
-  }
-
-  await loadTransactions();
-
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  const {data:profile}=await db.from('profiles').select('full_name,role,is_active').eq('id',user.id).maybeSingle();
+  document.getElementById('userName').textContent=profile?.full_name || user.email || 'المستخدم';
+  document.getElementById('userRole').textContent=profile?.role || '';
+  await Promise.all([loadTransactions(),loadDocuments()]);
 }
-
-/* تسجيل الخروج */
 
 async function logout(){
-
   await db.auth.signOut();
-
-  document.getElementById('app')
-
-    .classList.add('hidden');
-
-  document.getElementById('loginPage')
-
-    .classList.remove('hidden');
-
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('loginPage').classList.remove('hidden');
 }
 
-/* تحميل المعاملات */
+function showPage(pageId,button){
+  document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));
+  document.getElementById(pageId).classList.remove('hidden');
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  if(button) button.classList.add('active');
+}
 
 async function loadTransactions(){
+  const {data,error}=await db.from('transactions').select('*').order('transaction_date',{ascending:false});
+  if(error){document.getElementById('message').textContent='خطأ في تحميل المعاملات: '+error.message;return;}
+  allTransactions=data||[]; updateDashboard(); renderTransactions();
+}
 
-  const {data,error} =
+async function loadDocuments(){
+  const {data,error}=await db.from('school_documents').select('*').order('created_at',{ascending:false});
+  if(error){console.error('school_documents:',error.message);allDocuments=[];updateDashboard();return;}
+  allDocuments=data||[]; updateDashboard();
+  renderCurrentDocsIfOpen();
+}
 
-    await db
-
-      .from('transactions')
-
-      .select('*')
-
-      .order('transaction_date',{
-
-        ascending:false
-
-      });
-
-  if(error){
-
-    document.getElementById('message')
-
-      .textContent =
-
-      'خطأ في تحميل المعاملات: ' +
-
-      error.message;
-
-    return;
-
+function updateDashboard(){
+  const imports=allTransactions.filter(x=>x.type==='Import').length;
+  const exports=allTransactions.filter(x=>x.type==='Export').length;
+  const completed=allTransactions.filter(x=>x.status==='Completed').length;
+  document.getElementById('importCount').textContent=imports;
+  document.getElementById('exportCount').textContent=exports;
+  document.getElementById('completedCount').textContent=completed;
+  document.getElementById('totalCount').textContent=allTransactions.length;
+  for(const c of ['committee','assignment','circular','attachment']){
+    const el=document.getElementById(c+'Count');
+    if(el) el.textContent=allDocuments.filter(x=>x.category===c).length;
   }
-
-  allTransactions = data || [];
-
-  updateStats();
-
-  renderTransactions();
-
 }
-
-/* الإحصائيات */
-
-function updateStats(){
-
-  const imports =
-
-    allTransactions.filter(
-
-      x => x.type === 'Import'
-
-    ).length;
-
-  const exports =
-
-    allTransactions.filter(
-
-      x => x.type === 'Export'
-
-    ).length;
-
-  const completed =
-
-    allTransactions.filter(
-
-      x => x.status === 'Completed'
-
-    ).length;
-
-  document.getElementById('importCount')
-
-    .textContent = imports;
-
-  document.getElementById('exportCount')
-
-    .textContent = exports;
-
-  document.getElementById('completedCount')
-
-    .textContent = completed;
-
-  document.getElementById('totalCount')
-
-    .textContent = allTransactions.length;
-
-}
-
-/* عرض المعاملات */
 
 function renderTransactions(){
-
-  const search =
-
-    document.getElementById('search')
-
-      .value
-
-      .trim()
-
-      .toLowerCase();
-
-  const container =
-
-    document.getElementById('transactions');
-
-  container.innerHTML = '';
-
-  const filtered =
-
-    allTransactions.filter(x => {
-
-      const text = [
-
-        x.transaction_number,
-
-        x.subject,
-
-        x.origin,
-
-        x.destination
-
-      ]
-
-      .join(' ')
-
-      .toLowerCase();
-
-      return text.includes(search);
-
-    });
-
-  if(filtered.length === 0){
-
-    container.innerHTML =
-
-      '<div class="card">لا توجد معاملات.</div>';
-
-    return;
-
-  }
-
-  filtered.forEach(x => {
-
-    const type =
-
-      x.type === 'Import'
-
-      ? 'وارد'
-
-      : 'صادر';
-
-    const card =
-
-      document.createElement('div');
-
-    card.className =
-
-      'card transaction';
-
-    card.innerHTML = `
-
-      <h3>${x.subject || 'بدون موضوع'}</h3>
-
-      <div>
-
-        رقم المعاملة:
-
-        ${x.transaction_number || '-'}
-
-      </div>
-
-      <div>
-
-        التاريخ:
-
-        ${x.transaction_date || '-'}
-
-      </div>
-
-      <div>
-
-        الجهة:
-
-        ${x.origin || x.destination || '-'}
-
-      </div>
-
-      <br>
-
-      <span class="badge">
-
-        ${type}
-
-      </span>
-
-      <span class="badge">
-
-        ${statusArabic(x.status)}
-
-      </span>
-
-    `;
-
+  const search=(document.getElementById('search')?.value||'').trim().toLowerCase();
+  const container=document.getElementById('transactions'); if(!container) return;
+  container.innerHTML='';
+  const filtered=allTransactions.filter(x=>[x.transaction_number,x.subject,x.origin,x.destination].join(' ').toLowerCase().includes(search));
+  if(filtered.length===0){container.innerHTML='<div class="card empty">لا توجد معاملات.</div>';return;}
+  for(const x of filtered){
+    const id=safeId(x.id);
+    const type=x.type==='Import'?'وارد':'صادر';
+    const card=document.createElement('div');card.className='card item';
+    card.innerHTML=`<h3>${escapeHtml(x.subject||'بدون موضوع')}</h3>
+      <div class="meta">رقم المعاملة: ${escapeHtml(x.transaction_number||'-')}</div>
+      <div class="meta">التاريخ: ${escapeHtml(x.transaction_date||'-')}</div>
+      <div class="meta">الجهة: ${escapeHtml(x.origin||x.destination||'-')}</div>
+      <span class="badge">${type}</span> <span class="badge">${escapeHtml(statusArabic(x.status))}</span>
+      <div class="actions" id="txActions_${id}"></div>`;
     container.appendChild(card);
-
-  });
-
+    const actions=card.querySelector(`#txActions_${id}`);
+    if(x.attachment_path){const openBtn=document.createElement('button');openBtn.className='secondary small';openBtn.textContent='فتح PDF';openBtn.onclick=()=>openStoredPdf(TRANSACTION_BUCKET,x.attachment_path);actions.appendChild(openBtn);}
+    const delBtn=document.createElement('button');delBtn.className='danger small';delBtn.textContent='حذف';delBtn.onclick=()=>deleteTransaction(x.id,x.attachment_path);actions.appendChild(delBtn);
+  }
 }
 
-/* ترجمة الحالة */
-
-function statusArabic(status){
-
-  const values = {
-
-    Draft:'مسودة',
-
-    UnderReview:'قيد المراجعة',
-
-    Approved:'معتمدة',
-
-    Completed:'مكتملة',
-
-    Rejected:'مرفوضة',
-
-    Suspended:'معلقة'
-
-  };
-
-  return values[status] || status || '-';
-
-}
-
-/* إضافة معاملة */
+function statusArabic(status){return ({Draft:'مسودة',UnderReview:'قيد المراجعة',Approved:'معتمدة',Completed:'مكتملة',Rejected:'مرفوضة',Suspended:'معلقة'})[status]||status||'-';}
 
 async function addTransaction(){
-
-  const message =
-
-    document.getElementById('message');
-
-  const number =
-
-    document.getElementById(
-
-      'transactionNumber'
-
-    ).value.trim();
-
-  const date =
-
-    document.getElementById(
-
-      'transactionDate'
-
-    ).value;
-
-  if(!number || !date){
-
-    message.textContent =
-
-      'أدخلي رقم المعاملة والتاريخ.';
-
-    return;
-
+  const message=document.getElementById('message');
+  const number=document.getElementById('transactionNumber').value.trim();
+  const date=document.getElementById('transactionDate').value;
+  if(!number||!date){message.textContent='أدخلي رقم المعاملة والتاريخ.';return;}
+  message.textContent='جاري الحفظ...';
+  let attachmentPath=null;
+  const file=document.getElementById('attachmentFile').files[0];
+  if(file){
+    if(file.type!=='application/pdf' && !file.name.toLowerCase().endsWith('.pdf')){message.textContent='المرفق يجب أن يكون PDF.';return;}
+    attachmentPath=makeFileName();
+    const {error:uploadError}=await db.storage.from(TRANSACTION_BUCKET).upload(attachmentPath,file,{contentType:'application/pdf'});
+    if(uploadError){message.textContent='تعذر رفع الملف: '+uploadError.message;return;}
   }
-
-  message.textContent =
-
-    'جاري الحفظ...';
-const fileInput = document.getElementById('attachmentFile');
-const file = fileInput.files[0];
-let attachmentPath = null;
-
-if (file) {
-    const fileName = Date.now() + '_' + file.name;
-
-    const { error: uploadError } = await db.storage
-        .from('transaction-documents')
-        .upload(fileName, file);
-
-    if (uploadError) {
-        message.textContent = 'تعذر رفع الملف: ' + uploadError.message;
-        return;
-    }
-
-    attachmentPath = fileName;
-}
-  const record = {
-
+  const record={
     transaction_number:number,
-
-    type:
-
-      document.getElementById(
-
-        'transactionType'
-
-      ).value,
-
+    type:document.getElementById('transactionType').value,
     transaction_date:date,
-
-    origin:
-
-      document.getElementById(
-
-        'origin'
-
-      ).value.trim(),
-
-    destination:
-
-      document.getElementById(
-
-        'destination'
-
-      ).value.trim(),
-
-    subject:
-
-      document.getElementById(
-
-        'subject'
-
-      ).value.trim(),
-
-    status:
-
-      document.getElementById(
-
-        'status'
-
-      ).value,
-
-    notes:
-
-      document.getElementById(
-
-        'notes'
-
-).value.trim(),
-notes:
-    document.getElementById(
-        'notes'
-    ).value.trim(),
-
-attachment_path: attachmentPath
-};
+    origin:document.getElementById('origin').value.trim(),
+    destination:document.getElementById('destination').value.trim(),
+    subject:document.getElementById('subject').value.trim(),
+    status:document.getElementById('status').value,
+    notes:document.getElementById('notes').value.trim(),
+    attachment_path:attachmentPath
   };
-
-  const {error} =
-
-    await db
-
-      .from('transactions')
-
-      .insert(record);
-
-  if(error){
-
-    message.textContent =
-
-      'تعذر الحفظ: ' +
-
-      error.message;
-
-    return;
-
-  }
-
-  message.textContent =
-
-    'تم حفظ المعاملة بنجاح';
-
-  document.getElementById(
-
-    'transactionNumber'
-
-  ).value = '';
-
-  document.getElementById(
-
-    'origin'
-
-  ).value = '';
-
-  document.getElementById(
-
-    'destination'
-
-  ).value = '';
-
-  document.getElementById(
-
-    'subject'
-
-  ).value = '';
-
-  document.getElementById(
-
-    'notes'
-
-  ).value = '';
-
+  const {error}=await db.from('transactions').insert(record);
+  if(error){if(attachmentPath) await db.storage.from(TRANSACTION_BUCKET).remove([attachmentPath]);message.textContent='تعذر الحفظ: '+error.message;return;}
+  message.textContent='تم حفظ المعاملة بنجاح';
+  ['transactionNumber','origin','destination','subject','notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('attachmentFile').value='';
   await loadTransactions();
-
 }
 
-/* التحقق من جلسة سابقة */
+async function deleteTransaction(id,path){
+  if(!confirm('هل تريدين حذف هذه المعاملة؟')) return;
+  const {error}=await db.from('transactions').delete().eq('id',id);
+  if(error){alert('تعذر الحذف: '+error.message);return;}
+  if(path) await db.storage.from(TRANSACTION_BUCKET).remove([path]);
+  await loadTransactions();
+}
 
-async function checkSession(){
+function openDocsPage(category,pageId,button){
+  currentDocCategory=category; showPage(pageId,button); renderDocumentsPage(category,pageId);
+}
+function renderCurrentDocsIfOpen(){
+  const pageMap={committee:'committeesPage',assignment:'assignmentsPage',circular:'circularsPage',attachment:'attachmentsPage'};
+  const page=document.getElementById(pageMap[currentDocCategory]);
+  if(page && !page.classList.contains('hidden')) renderDocumentsPage(currentDocCategory,pageMap[currentDocCategory]);
+}
 
-  const {data} =
+function renderDocumentsPage(category,pageId){
+  const page=document.getElementById(pageId); const label=docLabels[category];
+  const rows=allDocuments.filter(x=>x.category===category);
+  page.innerHTML=`<div class="card">
+    <h2 class="section-title">إضافة إلى ${label}</h2>
+    <input id="docTitle_${category}" placeholder="العنوان">
+    <input id="docDate_${category}" type="date">
+    <textarea id="docNotes_${category}" placeholder="ملاحظات"></textarea>
+    <input id="docFile_${category}" type="file" accept="application/pdf,.pdf">
+    <div class="file-note">ارفعي ملف PDF الخاص بهذا القسم.</div>
+    <button class="primary" style="width:100%;margin-top:8px" onclick="addSchoolDocument('${category}')">حفظ</button>
+    <div id="docMessage_${category}" class="message"></div>
+  </div>
+  <div class="card"><input id="docSearch_${category}" placeholder="بحث في ${label}" oninput="renderDocumentCards('${category}','${pageId}')"></div>
+  <h2>${label}</h2><div id="docList_${category}"></div>`;
+  renderDocumentCards(category,pageId);
+}
 
-    await db.auth.getSession();
-
-  if(data.session){
-
-    await openApp(
-
-      data.session.user
-
-    );
-
+function renderDocumentCards(category,pageId){
+  const list=document.getElementById('docList_'+category); if(!list) return;
+  const search=(document.getElementById('docSearch_'+category)?.value||'').trim().toLowerCase();
+  const rows=allDocuments.filter(x=>x.category===category && [x.title,x.notes,x.document_date].join(' ').toLowerCase().includes(search));
+  list.innerHTML='';
+  if(rows.length===0){list.innerHTML='<div class="card empty">لا توجد بيانات في هذا القسم.</div>';return;}
+  for(const x of rows){
+    const card=document.createElement('div'); card.className='card item';
+    card.innerHTML=`<h3>${escapeHtml(x.title||'بدون عنوان')}</h3>
+      <div class="meta">التاريخ: ${escapeHtml(x.document_date||'-')}</div>
+      ${x.notes?`<div class="meta">${escapeHtml(x.notes)}</div>`:''}
+      <div class="actions"></div>`;
+    const actions=card.querySelector('.actions');
+    if(x.file_path){const openBtn=document.createElement('button');openBtn.className='secondary small';openBtn.textContent='فتح PDF';openBtn.onclick=()=>openStoredPdf(DOC_BUCKET,x.file_path);actions.appendChild(openBtn);}
+    const delBtn=document.createElement('button');delBtn.className='danger small';delBtn.textContent='حذف';delBtn.onclick=()=>deleteSchoolDocument(x.id,x.file_path);actions.appendChild(delBtn);
+    list.appendChild(card);
   }
-
 }
 
+async function addSchoolDocument(category){
+  const message=document.getElementById('docMessage_'+category);
+  const title=document.getElementById('docTitle_'+category).value.trim();
+  const documentDate=document.getElementById('docDate_'+category).value||null;
+  const notes=document.getElementById('docNotes_'+category).value.trim();
+  const file=document.getElementById('docFile_'+category).files[0];
+  if(!title){message.textContent='أدخلي العنوان.';return;}
+  if(!file){message.textContent='اختاري ملف PDF.';return;}
+  if(file.type!=='application/pdf' && !file.name.toLowerCase().endsWith('.pdf')){message.textContent='الملف يجب أن يكون PDF.';return;}
+  message.textContent='جاري الحفظ...';
+  const path=`${category}/${makeFileName()}`;
+  const {error:uploadError}=await db.storage.from(DOC_BUCKET).upload(path,file,{contentType:'application/pdf'});
+  if(uploadError){message.textContent='تعذر رفع الملف: '+uploadError.message;return;}
+  const {data:{user}}=await db.auth.getUser();
+  const {error}=await db.from('school_documents').insert({category,title,document_date:documentDate,notes,file_path:path,file_name:file.name,created_by:user?.id||null});
+  if(error){await db.storage.from(DOC_BUCKET).remove([path]);message.textContent='تعذر الحفظ: '+error.message;return;}
+  message.textContent='تم الحفظ بنجاح';
+  document.getElementById('docTitle_'+category).value='';document.getElementById('docDate_'+category).value='';document.getElementById('docNotes_'+category).value='';document.getElementById('docFile_'+category).value='';
+  await loadDocuments();
+}
+
+async function deleteSchoolDocument(id,path){
+  if(!confirm('هل تريدين حذف هذا العنصر؟')) return;
+  const {error}=await db.from('school_documents').delete().eq('id',id);
+  if(error){alert('تعذر الحذف: '+error.message);return;}
+  if(path) await db.storage.from(DOC_BUCKET).remove([path]);
+  await loadDocuments();
+}
+
+async function openStoredPdf(bucket,path){
+  const {data,error}=await db.storage.from(bucket).createSignedUrl(path,60*10);
+  if(error){alert('تعذر فتح الملف: '+error.message);return;}
+  window.open(data.signedUrl,'_blank','noopener');
+}
+
+async function checkSession(){const {data}=await db.auth.getSession();if(data.session) await openApp(data.session.user);}
 checkSession();
-
 </script>
-
 </body>
-
 </html>
