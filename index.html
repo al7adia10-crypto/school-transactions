@@ -785,7 +785,7 @@ if (file) {
     const fileName = Date.now() + '_' + file.name;
 
     const { error: uploadError } = await db.storage
-        .from('transaction-files')
+        .from('transaction-documents')
         .upload(fileName, file);
 
     if (uploadError) {
