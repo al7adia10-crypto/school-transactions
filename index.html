@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>الصادر والوارد - الابتدائية الحادية عشر</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+
+    *{box-sizing:border-box}
+
+    body{
+
+      margin:0;
+
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;
+
+      background:#f5f7f8;
+
+      color:#1e293b;
+
+    }
+
+    .header{
+
+      background:linear-gradient(135deg,#075985,#0f766e);
+
+      color:white;
+
+      padding:28px 18px;
+
+      text-align:center;
+
+      border-radius:0 0 28px 28px;
+
+    }
+
+    .header h1{margin:0;font-size:24px}
+
+    .header p{margin:8px 0 0;opacity:.9}
+
+    .container{
+
+      max-width:700px;
+
+      margin:auto;
+
+      padding:18px;
+
+    }
+
+    .card{
+
+      background:white;
+
+      padding:18px;
+
+      margin-bottom:15px;
+
+      border-radius:18px;
+
+      box-shadow:0 4px 18px rgba(0,0,0,.06);
+
+    }
+
+    input,select,textarea{
+
+      width:100%;
+
+      padding:13px;
+
+      margin:7px 0;
+
+      border:1px solid #d7dde3;
+
+      border-radius:12px;
+
+      font-size:16px;
+
+      background:white;
+
+    }
+
+    textarea{min-height:85px}
+
+    button{
+
+      border:0;
+
+      border-radius:12px;
+
+      padding:13px 18px;
+
+      font-size:16px;
+
+      cursor:pointer;
+
+    }
+
+    .primary{
+
+      width:100%;
+
+      background:#0f766e;
+
+      color:white;
+
+      font-weight:700;
+
+    }
+
+    .danger{
+
+      background:#ef4444;
+
+      color:white;
+
+    }
+
+    .stats{
+
+      display:grid;
+
+      grid-template-columns:1fr 1fr;
+
+      gap:10px;
+
+      margin-bottom:15px;
+
+    }
+
+    .stat{
+
+      background:white;
+
+      border-radius:16px;
+
+      padding:16px;
+
+      text-align:center;
+
+      box-shadow:0 3px 12px rgba(0,0,0,.05);
+
+    }
+
+    .stat strong{
+
+      display:block;
+
+      font-size:26px;
+
+      color:#0f766e;
+
+      margin-top:5px;
+
+    }
+
+    .transaction{
+
+      border-right:5px solid #0f766e;
+
+    }
+
+    .transaction h3{
+
+      margin:0 0 8px;
+
+    }
+
+    .badge{
+
+      display:inline-block;
+
+      padding:5px 10px;
+
+      border-radius:20px;
+
+      background:#e6fffa;
+
+      color:#0f766e;
+
+      font-size:13px;
+
+    }
+
+    .row{
+
+      display:flex;
+
+      justify-content:space-between;
+
+      gap:10px;
+
+      align-items:center;
+
+    }
+
+    .hidden{display:none}
+
+    #message{
+
+      margin:10px 0;
+
+      text-align:center;
+
+      font-weight:600;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+  <h1>نظام الصادر والوارد</h1>
+
+  <p>الابتدائية الحادية عشر</p>
+
+</div>
+
+<div class="container">
+
+  <!-- تسجيل الدخول -->
+
+  <div id="loginPage" class="card">
+
+    <h2>تسجيل الدخول</h2>
+
+    <input id="email" type="email" placeholder="البريد الإلكتروني">
+
+    <input id="password" type="password" placeholder="كلمة المرور">
+
+    <button class="primary" onclick="login()">
+
+      دخول
+
+    </button>
+
+    <div id="loginMessage"></div>
+
+  </div>
+
+  <!-- التطبيق -->
+
+  <div id="app" class="hidden">
+
+    <div class="card">
+
+      <div class="row">
+
+        <div>
+
+          <strong id="userName">فاطمة الشمري</strong>
+
+          <div id="userRole"></div>
+
+        </div>
+
+        <button class="danger" onclick="logout()">
+
+          خروج
+
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="stats">
+
+      <div class="stat">
+
+        الوارد
+
+        <strong id="importCount">0</strong>
+
+      </div>
+
+      <div class="stat">
+
+        الصادر
+
+        <strong id="exportCount">0</strong>
+
+      </div>
+
+      <div class="stat">
+
+        المكتملة
+
+        <strong id="completedCount">0</strong>
+
+      </div>
+
+      <div class="stat">
+
+        إجمالي المعاملات
+
+        <strong id="totalCount">0</strong>
+
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <h2>إضافة معاملة</h2>
+
+      <input id="transactionNumber" placeholder="رقم المعاملة">
+
+      <select id="transactionType">
+
+        <option value="Import">وارد</option>
+
+        <option value="Export">صادر</option>
+
+      </select>
+
+      <input id="transactionDate" type="date">
+
+      <input id="origin" placeholder="الجهة / المصدر">
+
+      <input id="destination" placeholder="الجهة المرسل إليها">
+
+      <input id="subject" placeholder="موضوع المعاملة">
+
+      <select id="status">
+
+        <option value="Draft">مسودة</option>
+
+        <option value="UnderReview">قيد المراجعة</option>
+
+        <option value="Approved">معتمدة</option>
+
+        <option value="Completed">مكتملة</option>
+
+        <option value="Suspended">معلقة</option>
+
+      </select>
+
+      <textarea id="notes" placeholder="ملاحظات"></textarea>
+
+      <button class="primary" onclick="addTransaction()">
+
+        حفظ المعاملة
+
+      </button>
+
+      <div id="message"></div>
+
+    </div>
+
+    <div class="card">
+
+      <h2>البحث</h2>
+
+      <input
+
+        id="search"
+
+        placeholder="ابحثي برقم المعاملة أو الموضوع أو الجهة"
+
+        oninput="renderTransactions()"
+
+      >
+
+    </div>
+
+    <h2>المعاملات</h2>
+
+    <div id="transactions"></div>
+
+  </div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+
+'https://alqhjzfvjgyhlitwdzxl.supabase.co';
+
+const SUPABASE_KEY =
+
+'sb_publishable_Dtv-dGYzmK9I2ppxuqH4dQ_qgFDZtcA';
+
+const db = supabase.createClient(
+
+  SUPABASE_URL,
+
+  SUPABASE_KEY
+
+);
+
+let allTransactions = [];
+
+/* تسجيل الدخول */
+
+async function login(){
+
+  const email =
+
+    document.getElementById('email').value.trim();
+
+  const password =
+
+    document.getElementById('password').value;
+
+  const message =
+
+    document.getElementById('loginMessage');
+
+  message.textContent = 'جاري تسجيل الدخول...';
+
+  const {data,error} =
+
+    await db.auth.signInWithPassword({
+
+      email,
+
+      password
+
+    });
+
+  if(error){
+
+    message.textContent =
+
+      'تعذر تسجيل الدخول: ' + error.message;
+
+    return;
+
+  }
+
+  message.textContent = '';
+
+  await openApp(data.user);
+
+}
+
+/* فتح التطبيق */
+
+async function openApp(user){
+
+  document.getElementById('loginPage')
+
+    .classList.add('hidden');
+
+  document.getElementById('app')
+
+    .classList.remove('hidden');
+
+  const {data:profile} =
+
+    await db
+
+      .from('profiles')
+
+      .select('full_name,role,is_active')
+
+      .eq('id',user.id)
+
+      .single();
+
+  if(profile){
+
+    document.getElementById('userName')
+
+      .textContent =
+
+      profile.full_name || user.email;
+
+    document.getElementById('userRole')
+
+      .textContent =
+
+      profile.role || '';
+
+  }
+
+  await loadTransactions();
+
+}
+
+/* تسجيل الخروج */
+
+async function logout(){
+
+  await db.auth.signOut();
+
+  document.getElementById('app')
+
+    .classList.add('hidden');
+
+  document.getElementById('loginPage')
+
+    .classList.remove('hidden');
+
+}
+
+/* تحميل المعاملات */
+
+async function loadTransactions(){
+
+  const {data,error} =
+
+    await db
+
+      .from('transactions')
+
+      .select('*')
+
+      .order('transaction_date',{
+
+        ascending:false
+
+      });
+
+  if(error){
+
+    document.getElementById('message')
+
+      .textContent =
+
+      'خطأ في تحميل المعاملات: ' +
+
+      error.message;
+
+    return;
+
+  }
+
+  allTransactions = data || [];
+
+  updateStats();
+
+  renderTransactions();
+
+}
+
+/* الإحصائيات */
+
+function updateStats(){
+
+  const imports =
+
+    allTransactions.filter(
+
+      x => x.type === 'Import'
+
+    ).length;
+
+  const exports =
+
+    allTransactions.filter(
+
+      x => x.type === 'Export'
+
+    ).length;
+
+  const completed =
+
+    allTransactions.filter(
+
+      x => x.status === 'Completed'
+
+    ).length;
+
+  document.getElementById('importCount')
+
+    .textContent = imports;
+
+  document.getElementById('exportCount')
+
+    .textContent = exports;
+
+  document.getElementById('completedCount')
+
+    .textContent = completed;
+
+  document.getElementById('totalCount')
+
+    .textContent = allTransactions.length;
+
+}
+
+/* عرض المعاملات */
+
+function renderTransactions(){
+
+  const search =
+
+    document.getElementById('search')
+
+      .value
+
+      .trim()
+
+      .toLowerCase();
+
+  const container =
+
+    document.getElementById('transactions');
+
+  container.innerHTML = '';
+
+  const filtered =
+
+    allTransactions.filter(x => {
+
+      const text = [
+
+        x.transaction_number,
+
+        x.subject,
+
+        x.origin,
+
+        x.destination
+
+      ]
+
+      .join(' ')
+
+      .toLowerCase();
+
+      return text.includes(search);
+
+    });
+
+  if(filtered.length === 0){
+
+    container.innerHTML =
+
+      '<div class="card">لا توجد معاملات.</div>';
+
+    return;
+
+  }
+
+  filtered.forEach(x => {
+
+    const type =
+
+      x.type === 'Import'
+
+      ? 'وارد'
+
+      : 'صادر';
+
+    const card =
+
+      document.createElement('div');
+
+    card.className =
+
+      'card transaction';
+
+    card.innerHTML = `
+
+      <h3>${x.subject || 'بدون موضوع'}</h3>
+
+      <div>
+
+        رقم المعاملة:
+
+        ${x.transaction_number || '-'}
+
+      </div>
+
+      <div>
+
+        التاريخ:
+
+        ${x.transaction_date || '-'}
+
+      </div>
+
+      <div>
+
+        الجهة:
+
+        ${x.origin || x.destination || '-'}
+
+      </div>
+
+      <br>
+
+      <span class="badge">
+
+        ${type}
+
+      </span>
+
+      <span class="badge">
+
+        ${statusArabic(x.status)}
+
+      </span>
+
+    `;
+
+    container.appendChild(card);
+
+  });
+
+}
+
+/* ترجمة الحالة */
+
+function statusArabic(status){
+
+  const values = {
+
+    Draft:'مسودة',
+
+    UnderReview:'قيد المراجعة',
+
+    Approved:'معتمدة',
+
+    Completed:'مكتملة',
+
+    Rejected:'مرفوضة',
+
+    Suspended:'معلقة'
+
+  };
+
+  return values[status] || status || '-';
+
+}
+
+/* إضافة معاملة */
+
+async function addTransaction(){
+
+  const message =
+
+    document.getElementById('message');
+
+  const number =
+
+    document.getElementById(
+
+      'transactionNumber'
+
+    ).value.trim();
+
+  const date =
+
+    document.getElementById(
+
+      'transactionDate'
+
+    ).value;
+
+  if(!number || !date){
+
+    message.textContent =
+
+      'أدخلي رقم المعاملة والتاريخ.';
+
+    return;
+
+  }
+
+  message.textContent =
+
+    'جاري الحفظ...';
+
+  const record = {
+
+    transaction_number:number,
+
+    type:
+
+      document.getElementById(
+
+        'transactionType'
+
+      ).value,
+
+    transaction_date:date,
+
+    origin:
+
+      document.getElementById(
+
+        'origin'
+
+      ).value.trim(),
+
+    destination:
+
+      document.getElementById(
+
+        'destination'
+
+      ).value.trim(),
+
+    subject:
+
+      document.getElementById(
+
+        'subject'
+
+      ).value.trim(),
+
+    status:
+
+      document.getElementById(
+
+        'status'
+
+      ).value,
+
+    notes:
+
+      document.getElementById(
+
+        'notes'
+
+      ).value.trim()
+
+  };
+
+  const {error} =
+
+    await db
+
+      .from('transactions')
+
+      .insert(record);
+
+  if(error){
+
+    message.textContent =
+
+      'تعذر الحفظ: ' +
+
+      error.message;
+
+    return;
+
+  }
+
+  message.textContent =
+
+    'تم حفظ المعاملة بنجاح';
+
+  document.getElementById(
+
+    'transactionNumber'
+
+  ).value = '';
+
+  document.getElementById(
+
+    'origin'
+
+  ).value = '';
+
+  document.getElementById(
+
+    'destination'
+
+  ).value = '';
+
+  document.getElementById(
+
+    'subject'
+
+  ).value = '';
+
+  document.getElementById(
+
+    'notes'
+
+  ).value = '';
+
+  await loadTransactions();
+
+}
+
+/* التحقق من جلسة سابقة */
+
+async function checkSession(){
+
+  const {data} =
+
+    await db.auth.getSession();
+
+  if(data.session){
+
+    await openApp(
+
+      data.session.user
+
+    );
+
+  }
+
+}
+
+checkSession();
+
+</script>
+
+</body>
+
+</html>
