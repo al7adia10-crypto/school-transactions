@@ -3,96 +3,182 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام الصادر والوارد - الابتدائية الحادية عشر</title>
+  <meta name="theme-color" content="#0f766e">
+  <title>نظام إدارة المعاملات المدرسية - الابتدائية الحادية عشر ومتوسطة حفصة بنت عمر</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>
+    :root{--brand:#0f766e;--brand-dark:#0b5f59;--brand-soft:#e9f7f5;--brand-pale:#f3fbfa;--blue:#075985;--ink:#1e293b;--muted:#64748b;--line:#dbe5e8;--surface:#ffffff;--bg:#f3f7f8;--danger:#e7524a;--shadow:0 14px 38px rgba(15,118,110,.09)}
     *{box-sizing:border-box}
-    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;background:#f4f7f8;color:#1e293b}
-    .header{background:linear-gradient(135deg,#075985,#0f766e);color:#fff;padding:24px 18px;text-align:center;border-radius:0 0 28px 28px}
-    .header h1{margin:0;font-size:24px}.header p{margin:7px 0 0;opacity:.9}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;background:radial-gradient(circle at 100% 0,#eaf8f6 0,transparent 28%),var(--bg);color:var(--ink);min-height:100vh}
+    button,input,select,textarea{font:inherit}
+    .header{position:relative;overflow:hidden;background:linear-gradient(135deg,#0b7a70 0%,#0f766e 48%,#0b6a73 100%);color:#fff;padding:22px 18px 30px;border-radius:0 0 34px 34px;box-shadow:0 12px 32px rgba(15,118,110,.17)}
+    .header:before,.header:after{content:"";position:absolute;border-radius:999px;background:rgba(255,255,255,.08);pointer-events:none}
+    .header:before{width:210px;height:210px;left:-75px;top:-120px}
+    .header:after{width:150px;height:150px;right:-48px;bottom:-90px}
+    .brand-wrap{max-width:920px;margin:auto;display:flex;align-items:center;gap:16px;position:relative;z-index:1}
+    .moe-logo{width:126px;height:86px;object-fit:contain;background:#fff;border-radius:18px;padding:9px 10px;box-shadow:0 7px 20px rgba(0,0,0,.08)}
+    .brand-text{flex:1}
+    .eyebrow{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);padding:5px 10px;border-radius:99px;font-size:12px;margin-bottom:8px;backdrop-filter:blur(8px)}
+    .header h1{margin:0;font-size:25px;line-height:1.4}
+    .header p{margin:5px 0 0;opacity:.94;font-size:14px;line-height:1.7}
     .container{max-width:920px;margin:auto;padding:16px}
-    .card{background:#fff;padding:16px;margin-bottom:14px;border-radius:18px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
-    input,select,textarea{width:100%;padding:12px;margin:6px 0;border:1px solid #d7dde3;border-radius:12px;font-size:16px;background:#fff}
-    textarea{min-height:82px;resize:vertical}
-    button{border:0;border-radius:12px;padding:12px 16px;font-size:15px;cursor:pointer}
-    .primary{background:#0f766e;color:#fff;font-weight:700}.secondary{background:#e2e8f0;color:#0f172a}.danger{background:#ef4444;color:#fff}.small{padding:9px 12px;font-size:14px}
-    .hidden{display:none!important}.row{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
-    .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-    .tab{background:#fff;color:#334155;border:1px solid #dbe3e8}.tab.active{background:#0f766e;color:#fff;border-color:#0f766e}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.stat{background:#fff;border-radius:16px;padding:14px;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,.05)}.stat strong{display:block;font-size:24px;color:#0f766e;margin-top:5px}
-    .section-title{margin:6px 0 12px}.item{border-right:5px solid #0f766e}.item h3{margin:0 0 8px}.meta{color:#64748b;font-size:14px;line-height:1.8}.badge{display:inline-block;padding:5px 10px;border-radius:20px;background:#e6fffa;color:#0f766e;font-size:13px;margin:3px 0}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .message{margin:10px 0;text-align:center;font-weight:600}.empty{color:#64748b;text-align:center}.file-note{font-size:13px;color:#64748b;margin-top:4px}
-    .dashboard-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.dash-card{background:#fff;padding:18px;border-radius:18px;box-shadow:0 3px 12px rgba(0,0,0,.05)}.dash-card strong{font-size:28px;color:#0f766e;display:block;margin-top:7px}
-    @media(max-width:700px){.stats{grid-template-columns:1fr 1fr}.tabs{grid-template-columns:1fr 1fr}.dashboard-grid{grid-template-columns:1fr}.row>*{max-width:100%}}
+    .card{background:rgba(255,255,255,.97);padding:17px;margin-bottom:14px;border-radius:20px;border:1px solid rgba(219,229,232,.82);box-shadow:var(--shadow);animation:fadeUp .42s ease both}
+    .login-card{max-width:520px;margin:6px auto 0;padding:22px}
+    .login-mark{width:52px;height:52px;border-radius:16px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:24px;margin-bottom:12px}
+    .login-card h2{margin:0 0 5px}.login-card .login-sub{margin:0 0 16px;color:var(--muted);font-size:14px}
+    .field-label{display:block;font-size:13px;font-weight:700;color:#526273;margin:11px 3px 2px}
+    input,select,textarea{width:100%;padding:13px 14px;margin:6px 0;border:1px solid var(--line);border-radius:13px;font-size:16px;background:#fff;color:var(--ink);outline:none;transition:.2s ease}
+    input:focus,select:focus,textarea:focus{border-color:#7bc1bb;box-shadow:0 0 0 4px rgba(15,118,110,.08)}
+    textarea{min-height:88px;resize:vertical}
+    button{border:0;border-radius:13px;padding:12px 16px;font-size:15px;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+    button:active{transform:scale(.985)}
+    .primary{background:linear-gradient(135deg,#118076,#0f766e);color:#fff;font-weight:750;box-shadow:0 8px 18px rgba(15,118,110,.18)}
+    .primary:hover{box-shadow:0 10px 24px rgba(15,118,110,.24)}
+    .secondary{background:#edf2f6;color:#243447}.danger{background:var(--danger);color:#fff}.small{padding:9px 12px;font-size:14px}
+    .full-button{width:100%;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:7px}
+    .hidden{display:none!important}
+    .row{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+    .user-card{padding:13px 15px}.user-info{display:flex;gap:10px;align-items:center}
+    .avatar{width:42px;height:42px;border-radius:14px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:18px}
+    .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px}
+    .tab{background:#fff;color:#405266;border:1px solid var(--line);min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:700;box-shadow:0 5px 18px rgba(15,23,42,.035)}
+    .tab i{font-size:21px;color:#4f7774;transition:.2s}
+    .tab.active{background:linear-gradient(135deg,#16877c,#0f766e);color:#fff;border-color:transparent;box-shadow:0 10px 22px rgba(15,118,110,.2);transform:translateY(-2px)}
+    .tab.active i{color:#fff;transform:scale(1.08)}
+    .welcome-card{position:relative;overflow:hidden;background:linear-gradient(135deg,#fff,#f5fbfa);border:1px solid #dcebea;padding:18px 18px 16px;margin-bottom:13px;border-radius:21px;box-shadow:var(--shadow)}
+    .welcome-card:after{content:"";position:absolute;width:110px;height:110px;border-radius:50%;background:rgba(15,118,110,.06);left:-35px;bottom:-50px}
+    .welcome-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .welcome-card h2{font-size:20px;margin:0 0 4px}.welcome-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.7}
+    .live-pill{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;background:#e7f7f3;color:#0f766e;padding:7px 10px;border-radius:99px;font-size:12px;font-weight:700}
+    .live-dot{width:8px;height:8px;border-radius:50%;background:#22a06b;box-shadow:0 0 0 0 rgba(34,160,107,.35);animation:pulse 1.8s infinite}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+    .stat,.dash-card{position:relative;overflow:hidden;background:#fff;border-radius:18px;padding:15px;border:1px solid #e0e9eb;box-shadow:0 7px 22px rgba(15,23,42,.05);transition:.22s ease}
+    .stat:hover,.dash-card:hover{transform:translateY(-3px);box-shadow:0 13px 28px rgba(15,118,110,.1)}
+    .stat-top,.dash-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .metric-icon{width:37px;height:37px;border-radius:12px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:17px}
+    .stat span,.dash-card span{font-size:13px;color:#536779;font-weight:700}
+    .stat strong,.dash-card strong{display:block;font-size:29px;color:var(--brand);margin-top:8px;letter-spacing:-.5px}
+    .metric-line{position:absolute;height:3px;right:0;bottom:0;width:0;background:linear-gradient(90deg,#51b6ac,#0f766e);animation:growLine .8s .15s ease forwards}
+    .dashboard-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .metric-pop{animation:metricPop .45s ease both}
+    .dashboard-note{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12px;margin-top:11px;padding-inline:2px}
+    .page-heading{display:flex;align-items:center;gap:11px;margin:4px 2px 13px}
+    .heading-icon{width:46px;height:46px;border-radius:15px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:20px;box-shadow:inset 0 0 0 1px #d9efec}
+    .page-heading h2{margin:0;font-size:22px}.page-heading p{margin:3px 0 0;color:var(--muted);font-size:13px}
+    .card-title-row{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+    .mini-icon{width:39px;height:39px;display:grid;place-items:center;border-radius:12px;background:#edf8f7;color:var(--brand)}
+    .card-title-row h3{margin:0;font-size:18px}.card-title-row p{margin:2px 0 0;color:var(--muted);font-size:12px}
+    .section-title{margin:6px 0 12px}
+    .item{border-right:4px solid #4ca89f;transition:.2s}.item:hover{transform:translateY(-2px)}.item h3{margin:0 0 8px}
+    .meta{color:var(--muted);font-size:14px;line-height:1.85}
+    .badge{display:inline-block;padding:5px 10px;border-radius:20px;background:#e8f7f5;color:var(--brand);font-size:13px;margin:4px 0}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions button{display:flex;align-items:center;gap:6px}
+    .message{margin:10px 0;text-align:center;font-weight:650}.empty{color:var(--muted);text-align:center}
+    .file-note{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-top:5px}
+    .search-card{display:flex;align-items:center;gap:8px;padding:10px 13px}.search-card i{color:#7b8c9d}.search-card input{border:0;margin:0;box-shadow:none;padding:8px 6px;background:transparent}
+    .section-label{display:flex;align-items:center;justify-content:space-between;margin:19px 3px 10px;font-size:21px;font-weight:800}
+    .section-count{font-size:12px;background:var(--brand-soft);color:var(--brand);padding:5px 9px;border-radius:99px}
+    .footer{max-width:920px;margin:12px auto 0;padding:18px 16px 30px;text-align:center;color:#708293;font-size:12px;line-height:1.8}
+    .designer{display:inline-flex;align-items:center;gap:6px;color:#4c6665;background:#edf7f6;padding:7px 11px;border-radius:99px;margin-bottom:6px}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes metricPop{0%{transform:scale(.98)}55%{transform:scale(1.015)}100%{transform:scale(1)}}
+    @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,160,107,.35)}70%{box-shadow:0 0 0 8px rgba(34,160,107,0)}100%{box-shadow:0 0 0 0 rgba(34,160,107,0)}}
+    @keyframes growLine{to{width:100%}}
+    @media(max-width:700px){
+      .header{padding:18px 14px 24px;border-radius:0 0 28px 28px}.brand-wrap{gap:11px}.moe-logo{width:96px;height:68px;border-radius:15px;padding:7px}
+      .header h1{font-size:20px}.header p{font-size:12px}.eyebrow{font-size:10px;padding:4px 8px}
+      .container{padding:13px}.stats{grid-template-columns:1fr 1fr}.tabs{grid-template-columns:repeat(3,1fr);gap:7px}.tab{min-height:67px;font-size:12px;padding:8px 5px;border-radius:15px}.tab i{font-size:19px}
+      .dashboard-grid{grid-template-columns:1fr 1fr}.row>*{max-width:100%}.welcome-top{align-items:center}.live-pill{font-size:10px;padding:6px 8px}
+    }
+    @media(max-width:390px){.dashboard-grid{grid-template-columns:1fr}.moe-logo{width:88px}}
   </style>
 </head>
 <body>
-<div class="header">
-  <h1>نظام الصادر والوارد</h1>
-  <p>الابتدائية الحادية عشر</p>
-</div>
+<header class="header">
+  <div class="brand-wrap">
+    <img class="moe-logo" src="https://www.moe.gov.sa/ar/mediacenter/MOEnews/NewsImages/moe--logo--1437.jpg" alt="شعار وزارة التعليم">
+    <div class="brand-text">
+      <div class="eyebrow"><i class="bi bi-stars"></i> نظام إداري رقمي</div>
+      <h1>نظام إدارة المعاملات المدرسية</h1>
+      <p>الابتدائية الحادية عشر ومتوسطة حفصة بنت عمر</p>
+    </div>
+  </div>
+</header>
 
-<div class="container">
-  <div id="loginPage" class="card">
+<main class="container">
+  <div id="loginPage" class="card login-card">
+    <div class="login-mark"><i class="bi bi-shield-lock"></i></div>
     <h2>تسجيل الدخول</h2>
+    <p class="login-sub">الوصول إلى الصادر والوارد واللجان والتكليفات والنشرات والمرفقات.</p>
+    <label class="field-label" for="email">البريد الإلكتروني</label>
     <input id="email" type="email" placeholder="البريد الإلكتروني" autocomplete="username">
+    <label class="field-label" for="password">كلمة المرور</label>
     <input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password">
-    <button class="primary" style="width:100%" onclick="login()">دخول</button>
+    <button class="primary full-button" onclick="login()"><i class="bi bi-box-arrow-in-left"></i> دخول</button>
     <div id="loginMessage" class="message"></div>
   </div>
 
   <div id="app" class="hidden">
-    <div class="card">
+    <div class="card user-card">
       <div class="row">
-        <div><strong id="userName">المستخدم</strong><div id="userRole" class="meta"></div></div>
-        <button class="danger small" onclick="logout()">خروج</button>
+        <div class="user-info"><div class="avatar"><i class="bi bi-person"></i></div><div><strong id="userName">المستخدم</strong><div id="userRole" class="meta"></div></div></div>
+        <button class="danger small" onclick="logout()"><i class="bi bi-box-arrow-right"></i> خروج</button>
       </div>
     </div>
 
-    <div class="tabs">
-      <button class="tab active" data-page="dashboard" onclick="showPage('dashboard',this)">الداش بورد</button>
-      <button class="tab" data-page="transactionsPage" onclick="showPage('transactionsPage',this)">الصادر والوارد</button>
-      <button class="tab" data-page="committeesPage" onclick="openDocsPage('committee','committeesPage',this)">اللجان</button>
-      <button class="tab" data-page="assignmentsPage" onclick="openDocsPage('assignment','assignmentsPage',this)">التكليفات</button>
-      <button class="tab" data-page="circularsPage" onclick="openDocsPage('circular','circularsPage',this)">النشرات</button>
-      <button class="tab" data-page="attachmentsPage" onclick="openDocsPage('attachment','attachmentsPage',this)">المرفقات</button>
-    </div>
+    <nav class="tabs" aria-label="أقسام النظام">
+      <button class="tab active" data-page="dashboard" onclick="showPage('dashboard',this)"><i class="bi bi-grid-1x2"></i><span>الداش بورد</span></button>
+      <button class="tab" data-page="transactionsPage" onclick="showPage('transactionsPage',this)"><i class="bi bi-arrow-left-right"></i><span>الصادر والوارد</span></button>
+      <button class="tab" data-page="committeesPage" onclick="openDocsPage('committee','committeesPage',this)"><i class="bi bi-people"></i><span>اللجان</span></button>
+      <button class="tab" data-page="assignmentsPage" onclick="openDocsPage('assignment','assignmentsPage',this)"><i class="bi bi-person-check"></i><span>التكليفات</span></button>
+      <button class="tab" data-page="circularsPage" onclick="openDocsPage('circular','circularsPage',this)"><i class="bi bi-megaphone"></i><span>النشرات</span></button>
+      <button class="tab" data-page="attachmentsPage" onclick="openDocsPage('attachment','attachmentsPage',this)"><i class="bi bi-paperclip"></i><span>المرفقات</span></button>
+    </nav>
 
     <section id="dashboard" class="page">
+      <div class="welcome-card">
+        <div class="welcome-top">
+          <div><h2>لوحة المتابعة</h2><p>نظرة سريعة على حالة العمل والملفات الإدارية في النظام.</p></div>
+          <div class="live-pill"><span class="live-dot"></span> محدث الآن</div>
+        </div>
+      </div>
       <div class="stats">
-        <div class="stat">الوارد<strong id="importCount">0</strong></div>
-        <div class="stat">الصادر<strong id="exportCount">0</strong></div>
-        <div class="stat">المكتملة<strong id="completedCount">0</strong></div>
-        <div class="stat">إجمالي المعاملات<strong id="totalCount">0</strong></div>
+        <div class="stat"><div class="stat-top"><span>الوارد</span><div class="metric-icon"><i class="bi bi-inbox"></i></div></div><strong id="importCount" data-value="0">0</strong><div class="metric-line"></div></div>
+        <div class="stat"><div class="stat-top"><span>الصادر</span><div class="metric-icon"><i class="bi bi-send"></i></div></div><strong id="exportCount" data-value="0">0</strong><div class="metric-line"></div></div>
+        <div class="stat"><div class="stat-top"><span>المكتملة</span><div class="metric-icon"><i class="bi bi-check2-circle"></i></div></div><strong id="completedCount" data-value="0">0</strong><div class="metric-line"></div></div>
+        <div class="stat"><div class="stat-top"><span>إجمالي المعاملات</span><div class="metric-icon"><i class="bi bi-files"></i></div></div><strong id="totalCount" data-value="0">0</strong><div class="metric-line"></div></div>
       </div>
       <div class="dashboard-grid">
-        <div class="dash-card">اللجان<strong id="committeeCount">0</strong></div>
-        <div class="dash-card">التكليفات<strong id="assignmentCount">0</strong></div>
-        <div class="dash-card">النشرات<strong id="circularCount">0</strong></div>
-        <div class="dash-card">المرفقات<strong id="attachmentCount">0</strong></div>
+        <div class="dash-card"><div class="dash-top"><span>اللجان</span><div class="metric-icon"><i class="bi bi-people"></i></div></div><strong id="committeeCount" data-value="0">0</strong><div class="metric-line"></div></div>
+        <div class="dash-card"><div class="dash-top"><span>التكليفات</span><div class="metric-icon"><i class="bi bi-person-check"></i></div></div><strong id="assignmentCount" data-value="0">0</strong><div class="metric-line"></div></div>
+        <div class="dash-card"><div class="dash-top"><span>النشرات</span><div class="metric-icon"><i class="bi bi-megaphone"></i></div></div><strong id="circularCount" data-value="0">0</strong><div class="metric-line"></div></div>
+        <div class="dash-card"><div class="dash-top"><span>المرفقات</span><div class="metric-icon"><i class="bi bi-paperclip"></i></div></div><strong id="attachmentCount" data-value="0">0</strong><div class="metric-line"></div></div>
       </div>
+      <div class="dashboard-note"><i class="bi bi-clock-history"></i> آخر تحديث للبيانات: <span id="lastUpdated">الآن</span></div>
     </section>
 
     <section id="transactionsPage" class="page hidden">
-      <div class="card">
-        <h2 class="section-title">إضافة معاملة</h2>
-        <input id="transactionNumber" placeholder="رقم المعاملة">
-        <select id="transactionType"><option value="Import">وارد</option><option value="Export">صادر</option></select>
-        <input id="transactionDate" type="date">
-        <input id="origin" placeholder="الجهة / المصدر">
-        <input id="destination" placeholder="الجهة المرسل إليها">
-        <input id="subject" placeholder="موضوع المعاملة">
-        <select id="status">
-          <option value="Draft">مسودة</option><option value="UnderReview">قيد المراجعة</option><option value="Approved">معتمدة</option><option value="Completed">مكتملة</option><option value="Suspended">معلقة</option>
-        </select>
-        <textarea id="notes" placeholder="ملاحظات"></textarea>
-        <input id="attachmentFile" type="file" accept="application/pdf,.pdf">
-        <div class="file-note">يمكن إرفاق ملف PDF مع المعاملة.</div>
-        <button class="primary" style="width:100%;margin-top:8px" onclick="addTransaction()">حفظ المعاملة</button>
+      <div class="page-heading"><div class="heading-icon"><i class="bi bi-arrow-left-right"></i></div><div><h2>الصادر والوارد</h2><p>تسجيل المعاملات ومتابعتها وإرفاق ملفات PDF.</p></div></div>
+      <div class="card form-card">
+        <div class="card-title-row"><div class="mini-icon"><i class="bi bi-plus-lg"></i></div><div><h3>إضافة معاملة</h3><p>أدخلي بيانات المعاملة ثم احفظيها.</p></div></div>
+        <label class="field-label" for="transactionNumber">رقم المعاملة</label><input id="transactionNumber" placeholder="رقم المعاملة">
+        <label class="field-label" for="transactionType">نوع المعاملة</label><select id="transactionType"><option value="Import">وارد</option><option value="Export">صادر</option></select>
+        <label class="field-label" for="transactionDate">التاريخ</label><input id="transactionDate" type="date">
+        <label class="field-label" for="origin">الجهة / المصدر</label><input id="origin" placeholder="الجهة / المصدر">
+        <label class="field-label" for="destination">الجهة المرسل إليها</label><input id="destination" placeholder="الجهة المرسل إليها">
+        <label class="field-label" for="subject">موضوع المعاملة</label><input id="subject" placeholder="موضوع المعاملة">
+        <label class="field-label" for="status">الحالة</label>
+        <select id="status"><option value="Draft">مسودة</option><option value="UnderReview">قيد المراجعة</option><option value="Approved">معتمدة</option><option value="Completed">مكتملة</option><option value="Suspended">معلقة</option></select>
+        <label class="field-label" for="notes">ملاحظات</label><textarea id="notes" placeholder="ملاحظات"></textarea>
+        <label class="field-label" for="attachmentFile">ملف PDF</label><input id="attachmentFile" type="file" accept="application/pdf,.pdf">
+        <div class="file-note"><i class="bi bi-file-earmark-pdf"></i> يمكن إرفاق ملف PDF مع المعاملة.</div>
+        <button class="primary full-button" onclick="addTransaction()"><i class="bi bi-check2-circle"></i> حفظ المعاملة</button>
         <div id="message" class="message"></div>
       </div>
-      <div class="card"><h2 class="section-title">البحث</h2><input id="search" placeholder="ابحثي برقم المعاملة أو الموضوع أو الجهة" oninput="renderTransactions()"></div>
-      <h2>المعاملات</h2><div id="transactions"></div>
+      <div class="card search-card"><i class="bi bi-search"></i><input id="search" placeholder="ابحثي برقم المعاملة أو الموضوع أو الجهة" oninput="renderTransactions()"></div>
+      <div class="section-label"><span>المعاملات</span></div><div id="transactions"></div>
     </section>
 
     <section id="committeesPage" class="page hidden"></section>
@@ -100,9 +186,16 @@
     <section id="circularsPage" class="page hidden"></section>
     <section id="attachmentsPage" class="page hidden"></section>
   </div>
-</div>
+</main>
+
+<footer class="footer">
+  <div class="designer"><i class="bi bi-lightbulb"></i> فكرة وتصميم وإعداد: فاطمة الشمري</div>
+  <div>سكرتيرة ومهتمة بالتقنية وتطوير العمل الإداري</div>
+  <div>الابتدائية الحادية عشر ومتوسطة حفصة بنت عمر</div>
+</footer>
 
 <script>
+
 const SUPABASE_URL='https://alqhjzfvjgyhlitwdzxl.supabase.co';
 const SUPABASE_KEY='sb_publishable_Dtv-dGYzmK9I2ppxuqH4dQ_qgFDZtcA';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -113,6 +206,7 @@ let allTransactions=[];
 let allDocuments=[];
 let currentDocCategory='committee';
 const docLabels={committee:'اللجان',assignment:'التكليفات',circular:'النشرات',attachment:'المرفقات'};
+const docIcons={committee:'bi-people',assignment:'bi-person-check',circular:'bi-megaphone',attachment:'bi-paperclip'};
 
 function escapeHtml(value){
   return String(value ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]));
@@ -166,18 +260,44 @@ async function loadDocuments(){
   renderCurrentDocsIfOpen();
 }
 
+function animateNumber(el,target){
+  if(!el) return;
+  const start=Number(el.dataset.value||0);
+  const end=Number(target||0);
+  el.dataset.value=end;
+  const duration=650;
+  const t0=performance.now();
+  function frame(now){
+    const p=Math.min((now-t0)/duration,1);
+    const eased=1-Math.pow(1-p,3);
+    el.textContent=Math.round(start+(end-start)*eased);
+    if(p<1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+function pulseDashboard(){
+  document.querySelectorAll('.stat,.dash-card').forEach((card,i)=>{
+    card.classList.remove('metric-pop');
+    setTimeout(()=>card.classList.add('metric-pop'),i*45);
+  });
+}
+
 function updateDashboard(){
   const imports=allTransactions.filter(x=>x.type==='Import').length;
   const exports=allTransactions.filter(x=>x.type==='Export').length;
   const completed=allTransactions.filter(x=>x.status==='Completed').length;
-  document.getElementById('importCount').textContent=imports;
-  document.getElementById('exportCount').textContent=exports;
-  document.getElementById('completedCount').textContent=completed;
-  document.getElementById('totalCount').textContent=allTransactions.length;
+  animateNumber(document.getElementById('importCount'),imports);
+  animateNumber(document.getElementById('exportCount'),exports);
+  animateNumber(document.getElementById('completedCount'),completed);
+  animateNumber(document.getElementById('totalCount'),allTransactions.length);
   for(const c of ['committee','assignment','circular','attachment']){
     const el=document.getElementById(c+'Count');
-    if(el) el.textContent=allDocuments.filter(x=>x.category===c).length;
+    if(el) animateNumber(el,allDocuments.filter(x=>x.category===c).length);
   }
+  const updated=document.getElementById('lastUpdated');
+  if(updated) updated.textContent=new Intl.DateTimeFormat('ar-SA',{hour:'numeric',minute:'2-digit'}).format(new Date());
+  pulseDashboard();
 }
 
 function renderTransactions(){
@@ -198,8 +318,8 @@ function renderTransactions(){
       <div class="actions" id="txActions_${id}"></div>`;
     container.appendChild(card);
     const actions=card.querySelector(`#txActions_${id}`);
-    if(x.attachment_path){const openBtn=document.createElement('button');openBtn.className='secondary small';openBtn.textContent='فتح PDF';openBtn.onclick=()=>openStoredPdf(TRANSACTION_BUCKET,x.attachment_path);actions.appendChild(openBtn);}
-    const delBtn=document.createElement('button');delBtn.className='danger small';delBtn.textContent='حذف';delBtn.onclick=()=>deleteTransaction(x.id,x.attachment_path);actions.appendChild(delBtn);
+    if(x.attachment_path){const openBtn=document.createElement('button');openBtn.className='secondary small';openBtn.innerHTML='<i class="bi bi-file-earmark-pdf"></i> فتح PDF';openBtn.onclick=()=>openStoredPdf(TRANSACTION_BUCKET,x.attachment_path);actions.appendChild(openBtn);}
+    const delBtn=document.createElement('button');delBtn.className='danger small';delBtn.innerHTML='<i class="bi bi-trash3"></i> حذف';delBtn.onclick=()=>deleteTransaction(x.id,x.attachment_path);actions.appendChild(delBtn);
   }
 }
 
@@ -257,19 +377,24 @@ function renderCurrentDocsIfOpen(){
 
 function renderDocumentsPage(category,pageId){
   const page=document.getElementById(pageId); const label=docLabels[category];
-  const rows=allDocuments.filter(x=>x.category===category);
-  page.innerHTML=`<div class="card">
-    <h2 class="section-title">إضافة إلى ${label}</h2>
-    <input id="docTitle_${category}" placeholder="العنوان">
+  const icon=docIcons[category]||'bi-folder2-open';
+  page.innerHTML=`<div class="page-heading"><div class="heading-icon"><i class="bi ${icon}"></i></div><div><h2>${label}</h2><p>إدارة ${label} وحفظ ملفات PDF المرتبطة بها.</p></div></div>
+  <div class="card form-card">
+    <div class="card-title-row"><div class="mini-icon"><i class="bi bi-plus-lg"></i></div><div><h3>إضافة إلى ${label}</h3><p>أدخلي البيانات ثم أرفقي ملف PDF.</p></div></div>
+    <label class="field-label" for="docTitle_${category}">العنوان</label>
+    <input id="docTitle_${category}" placeholder="اكتبي العنوان">
+    <label class="field-label" for="docDate_${category}">التاريخ</label>
     <input id="docDate_${category}" type="date">
-    <textarea id="docNotes_${category}" placeholder="ملاحظات"></textarea>
+    <label class="field-label" for="docNotes_${category}">ملاحظات</label>
+    <textarea id="docNotes_${category}" placeholder="ملاحظات اختيارية"></textarea>
+    <label class="field-label" for="docFile_${category}">ملف PDF</label>
     <input id="docFile_${category}" type="file" accept="application/pdf,.pdf">
-    <div class="file-note">ارفعي ملف PDF الخاص بهذا القسم.</div>
-    <button class="primary" style="width:100%;margin-top:8px" onclick="addSchoolDocument('${category}')">حفظ</button>
+    <div class="file-note"><i class="bi bi-file-earmark-pdf"></i> ارفعي ملف PDF الخاص بهذا القسم.</div>
+    <button class="primary full-button" onclick="addSchoolDocument('${category}')"><i class="bi bi-check2-circle"></i> حفظ</button>
     <div id="docMessage_${category}" class="message"></div>
   </div>
-  <div class="card"><input id="docSearch_${category}" placeholder="بحث في ${label}" oninput="renderDocumentCards('${category}','${pageId}')"></div>
-  <h2>${label}</h2><div id="docList_${category}"></div>`;
+  <div class="card search-card"><i class="bi bi-search"></i><input id="docSearch_${category}" placeholder="بحث في ${label}" oninput="renderDocumentCards('${category}','${pageId}')"></div>
+  <div class="section-label"><span>${label}</span><span class="section-count">${allDocuments.filter(x=>x.category===category).length}</span></div><div id="docList_${category}"></div>`;
   renderDocumentCards(category,pageId);
 }
 
@@ -286,8 +411,8 @@ function renderDocumentCards(category,pageId){
       ${x.notes?`<div class="meta">${escapeHtml(x.notes)}</div>`:''}
       <div class="actions"></div>`;
     const actions=card.querySelector('.actions');
-    if(x.file_path){const openBtn=document.createElement('button');openBtn.className='secondary small';openBtn.textContent='فتح PDF';openBtn.onclick=()=>openStoredPdf(DOC_BUCKET,x.file_path);actions.appendChild(openBtn);}
-    const delBtn=document.createElement('button');delBtn.className='danger small';delBtn.textContent='حذف';delBtn.onclick=()=>deleteSchoolDocument(x.id,x.file_path);actions.appendChild(delBtn);
+    if(x.file_path){const openBtn=document.createElement('button');openBtn.className='secondary small';openBtn.innerHTML='<i class="bi bi-file-earmark-pdf"></i> فتح PDF';openBtn.onclick=()=>openStoredPdf(DOC_BUCKET,x.file_path);actions.appendChild(openBtn);}
+    const delBtn=document.createElement('button');delBtn.className='danger small';delBtn.innerHTML='<i class="bi bi-trash3"></i> حذف';delBtn.onclick=()=>deleteSchoolDocument(x.id,x.file_path);actions.appendChild(delBtn);
     list.appendChild(card);
   }
 }
@@ -329,6 +454,7 @@ async function openStoredPdf(bucket,path){
 
 async function checkSession(){const {data}=await db.auth.getSession();if(data.session) await openApp(data.session.user);}
 checkSession();
+
 </script>
 </body>
 </html>
