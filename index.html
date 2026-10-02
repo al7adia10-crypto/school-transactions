@@ -777,7 +777,24 @@ async function addTransaction(){
   message.textContent =
 
     'جاري الحفظ...';
+const fileInput = document.getElementById('attachmentFile');
+const file = fileInput.files[0];
+let attachmentPath = null;
 
+if (file) {
+    const fileName = Date.now() + '_' + file.name;
+
+    const { error: uploadError } = await db.storage
+        .from('transaction-files')
+        .upload(fileName, file);
+
+    if (uploadError) {
+        message.textContent = 'تعذر رفع الملف: ' + uploadError.message;
+        return;
+    }
+
+    attachmentPath = fileName;
+}
   const record = {
 
     transaction_number:number,
@@ -830,8 +847,14 @@ async function addTransaction(){
 
         'notes'
 
-      ).value.trim()
+).value.trim(),
+notes:
+    document.getElementById(
+        'notes'
+    ).value.trim(),
 
+attachment_path: attachmentPath
+};
   };
 
   const {error} =
