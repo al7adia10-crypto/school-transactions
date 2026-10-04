@@ -220,6 +220,7 @@ const SUPABASE_KEY='sb_publishable_Dtv-dGYzmK9I2ppxuqH4dQ_qgFDZtcA';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const TRANSACTION_BUCKET='transaction-documents';
 const DOC_BUCKET='school-documents';
+const STORAGE_BUCKETS=[TRANSACTION_BUCKET,DOC_BUCKET];
 
 let allTransactions=[];
 let allDocuments=[];
